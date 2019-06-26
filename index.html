@@ -1,0 +1,50 @@
+<html>
+<head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+function on_go_clicked(){
+
+    var base = $('#base').val(),
+        vals = $('#vals').val();
+
+    if (!base || !vals) return;
+
+    var rows = [];
+    vals.split(/,/).forEach(function(val){
+        val = val.trim();
+        var link_url = base+val;
+        rows.push('<li>'+val+' <a href="'+link_url+'" target=_blank>'+link_url+'</a>');
+    });
+    $('#links_in_action').html(rows.join("\n"));
+    $('#resulting_link').html(
+        location.protocol + '//' + location.host + location.pathname
+        // encodeURIComponent ?
+        +'?base='+(base.split('&').join('%26'))
+        +'&vals='+vals
+    );
+}
+$(function(){
+    var vars = {};
+    location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    var vals = $('#vals').val(vars.vals||'');
+    var base = $('#base').val( (vars.base||'').split('%26').join('&') );
+
+    on_go_clicked();
+});
+</script>
+</head>
+<body>
+<div id="top_space"></div>
+<table border=1 cellspacing=0 align=center>
+<tr>
+<td>base<br><input type=text name="base" id="base" size=80></td>
+<td>vals<br><input type=text name="vals" id="vals" size=80></td>
+<td vAlign=center><button id="go" onclick="on_go_clicked()">go</button></td>
+</tr>
+</table>
+<div id=resulting_link></div>
+<div id=links_in_action></div>
+</body>
+</html>
