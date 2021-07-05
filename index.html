@@ -2,9 +2,10 @@
 <head>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
-function on_go_clicked(){
+function on_go_clicked(userDidIt){
 
     var base = $('#base').val(),
+        heading = $('#heading').val();
         vals = $('#vals').val();
 
     if (!base || !vals) return;
@@ -16,35 +17,82 @@ function on_go_clicked(){
         rows.push('<li>'+val+' <a href="'+link_url+'" target=_blank>'+link_url+'</a>');
     });
     $('#links_in_action').html(rows.join("\n"));
-    $('#resulting_link').html(
+    $('#resulting_link').text(
         location.protocol + '//' + location.host + location.pathname
-        // encodeURIComponent ?
-        +'?base='+(base.split('&').join('%26'))
-        +'&vals='+vals
+        +'?base='+btoa(unescape(encodeURIComponent(base)))
+        +'&heading='+btoa(unescape(encodeURIComponent(heading)))
+        +'&vals='+btoa(unescape(encodeURIComponent(vals)))
     );
+    $('#heading-div').text($('#heading').val());
+    $('#shareableLinkDiv').toggle(true);
+    $('#shareableLinkDiv, #inputFldsDiv').toggle( userDidIt ? true : false );
 }
 $(function(){
     var vars = {};
     location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         vars[key] = value;
     });
-    var vals = $('#vals').val(vars.vals||'');
-    var base = $('#base').val( (vars.base||'').split('%26').join('&') );
-
+    console.dir(vars);
+    var vals = $('#vals').val( vars.vals ? atob(vars.vals) : '' );
+    var base = $('#base').val( vars.base ? atob(vars.base) : '' );
+    var heading = $('#heading').val( vars.heading ? atob(vars.heading) : '' );
     on_go_clicked();
 });
 </script>
 </head>
 <body>
 <div id="top_space"></div>
-<table border=1 cellspacing=0 align=center>
+
+<Div id="inputFldsDiv">
+<table border=1 cellspacing=0 cellpadding=5 align=center bordercolor=lightgrey>
 <tr>
-<td>base<br><input type=text name="base" id="base" size=80></td>
-<td>vals<br><input type=text name="vals" id="vals" size=80></td>
-<td vAlign=center><button id="go" onclick="on_go_clicked()">go</button></td>
+  <td colspan=2>heading/description:
+    <input type=text name="heading" id="heading" size=80>
+  </td>
+</tr>
+<tr>
+  <td>base url</td>
+  <td><input type=text name="base" id="base" size=100>
+    <button id="go" onclick="on_go_clicked('userDidIt')">go</button>
+    <div class="eg">
+    e.g. https://shadkam.github.io/jsutils/html/
+    </div>
+  </td>
+</tr>
+<tr>
+  <td>vals</td>
+  <td><textarea name="vals" id="vals" rows=2 cols=100></textarea>
+    <div class="eg">
+    e.g. kids_maths01.html, kids_urdu01.html, covnl01.html, jsonViewer.html
+    </div>
+  </td>
 </tr>
 </table>
-<div id=resulting_link></div>
+</Div>
+
+<Div style="margin:2em 0 2em 0; border: lightgrey solid 2px;">
+<div><button style="float:right;" onClick="on_go_clicked('userDidIt')">edit</button></div>
+<Table align=center>
+<Tr><Th>
+<div id="heading-div"></div>
+</Th></Tr>
+<Tr><Td>
 <div id=links_in_action></div>
+</Td></Tr>
+</Table>
+</Div>
+
+<Div id="shareableLinkDiv" style="display:none;">
+<table border=1 cellspacing=0 cellpadding=5 align=center bordercolor=lightgrey>
+<tr>
+  <td>sharable link<br></td>
+  <td>
+    <div><textarea rows=3 cols=100 id=resulting_link></textarea></div>
+    <div>use it only for information which can be made publicly available</div>
+  </td>
+</tr>
+</table>
+</Div>
+
 </body>
 </html>
