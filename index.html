@@ -8,7 +8,10 @@ function on_go_clicked(userDidIt){
         heading = $('#heading').val();
         vals = $('#vals').val();
 
-    if (!base || !vals) return;
+    if (!base || !vals) {
+        $('#editButton').toggle( false );
+        return;
+    }
 
     var rows = [];
     vals.split(/,/).forEach(function(val){
@@ -24,8 +27,8 @@ function on_go_clicked(userDidIt){
         +'&vals='+btoa(unescape(encodeURIComponent(vals)))
     );
     $('#heading-div').text($('#heading').val());
-    $('#shareableLinkDiv').toggle(true);
     $('#shareableLinkDiv, #inputFldsDiv').toggle( userDidIt ? true : false );
+    $('#editButton').toggle( userDidIt ? false : true );
 }
 $(function(){
     var vars = {};
@@ -70,8 +73,8 @@ $(function(){
 </table>
 </Div>
 
-<Div style="margin:2em 0 2em 0; border: lightgrey solid 2px;">
-<div><button style="float:right;" onClick="on_go_clicked('userDidIt')">edit</button></div>
+<Div style="margin:2em 0 2em 0;">
+<div><button style="float:right;" onClick="on_go_clicked('userDidIt')" id=editButton>edit</button></div>
 <Table align=center>
 <Tr><Th>
 <div id="heading-div"></div>
